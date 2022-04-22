@@ -15,6 +15,7 @@
 如何把学习当游戏？ - 白衣君纸的回答 - 知乎
 https://www.zhihu.com/question/20262641/answer/828702215
 
+
 ## 对标产品
 
 - [玩成PlayTask](https://www.zhihu.com/question/47684675)
@@ -25,3 +26,10 @@ https://www.zhihu.com/question/20262641/answer/828702215
 
 ## Wireframe
 ![](./media/wireframe-v1.jpg)
+
+## Gongnen
+
+1. 副本/打卡组（和同伴的交流）
+2. 偷菜
+3. 
+4. 
