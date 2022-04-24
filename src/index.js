@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
@@ -9,7 +9,7 @@ function Navbar() {
             <h1>
                 <a href="#1">TUG</a>
             </h1>
-            <button>
+            <button className="no-button">
                 <i className="fa-solid fa-gear fs-2"></i>
             </button>
         </div>
@@ -63,10 +63,46 @@ function Rewards() {
 }
 
 
-function Tasks() {
+function Tasks(props) {
+    let tasks = [
+        { name: 't1', subTask: null },
+        { name: 't2', subTask: null },
+        {
+            name: 't3', subTask: [
+                {
+                    name: 't31', subTask: [{ name: 't1', subTask: null },
+                    { name: 't2', subTask: null },]
+                },
+                { name: 't31', subTask: null },
+                { name: 't31', subTask: null },
+            ]
+        },
+        { name: 't4', subTask: null },
+        { name: 't5', subTask: null },
+    ];
+
+
+    const taskToHtml = (tasks) => {
+        let li = [];
+        tasks.forEach((task, i) => {
+            li.push(<li key={i}>{task.name}</li>)
+            if (task.subTask) {
+                li.push(taskToHtml(task.subTask));
+            }
+        })
+        return <ul>{li}</ul>
+    }
+
+    const [ul, setUl] = useState(taskToHtml(tasks));
+    // setUl(taskToHtml(tasks));
+
     return (
         <CardContainer>
-            <div>tasks</div>
+            <div>
+                tasks
+                <button className="btn btn-secondary" onClick={() => { setUl(<ul></ul>) }}>Clear</button>
+            </div>
+            {ul}
         </CardContainer>
     )
 }

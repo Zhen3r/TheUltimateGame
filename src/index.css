@@ -1,4 +1,4 @@
-button {
+.no-button {
     all: unset;
     cursor: pointer;
 }
@@ -71,7 +71,17 @@ p {
     }
 
     #root {
-        height: 1200px;
+        height: fit-content;
+    }
+
+    .card-container {
+        /* height: max-content; */
+        min-height: 300px;
+    }
+
+    .row-lower,
+    .row-upper {
+        height: fit-content;
     }
 
 }
