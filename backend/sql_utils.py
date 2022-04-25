@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from pandas.io.sql import DatabaseError
-
+from sqlalchemy.exc import ResourceClosedError
 # import psycopg2
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
@@ -23,6 +23,10 @@ def sql2pd(query: str, vars: list):
         res = pd.read_sql(query, conn, params=vars)
     except DatabaseError as e:
         raise Exception(e.__class__.__name__, e.args)
+    except ResourceClosedError as e:
+        return None
+    if res.shape[0] == 0:
+        return None
     return res
 
 

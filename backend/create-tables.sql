@@ -13,11 +13,12 @@ create table users(
     mail text unique,
     password text not null,
     coin integer default 0 not null,
-    xp int default 0 not null
+    level integer default 1 not null,
+    xp int default 0 not null,
+    upgrade_xp int default 100 not null
 );
 
 insert into users (name,mail,password,coin,xp) values
-('xzz', 'xzzxzz2010@163.com', '123', '1','100'),
 ('csw', 'csw@163.com', 'cswcsw123345', '10','50');
 
 
@@ -34,9 +35,7 @@ create table tasks(
     content text,
     update_time timestamp,
     is_finished boolean,
-    is_repeat boolean,
-    repeat_start timestamp,
-    repeat_interval text,
+    finish_time TIMESTAMP,
     ddl timestamp,
     task_level integer not null
 );
@@ -76,16 +75,17 @@ select * from task_labels;
 
 -- finished tasks
 
-create table finished_tasks(
-    id serial primary key,
-    task_id int references tasks(id) not null,
-    finish_time TIMESTAMP not null
-);
+-- create table finished_tasks(
+--     id serial primary key,
+--     uid integer references users(id) not null, 
+--     task_id int references tasks(id) not null,
+--     finish_time TIMESTAMP not null
+-- );
 
-insert into finished_tasks(task_id, finish_time) VALUES
-(1, '2020-10-10 21:00:00');
+-- insert into finished_tasks(task_id, uid, finish_time) VALUES
+-- (1, 1, '2020-10-10 21:00:00');
 
-select * from finished_tasks;
+-- select * from finished_tasks;
 
 -- daily_tasks
 
@@ -99,3 +99,16 @@ insert into daily_tasks VALUES
 ('check in', 1, '2021-10-10');
 
 select * from daily_tasks;
+
+
+with finish_count_today as (
+    select 1 from tasks
+    where uid = 2
+    and date(finish_time) = date(now())
+), c as (
+    select count(1) count
+    from finish_count_today
+)
+select level, count
+from users, c
+where id = 2
