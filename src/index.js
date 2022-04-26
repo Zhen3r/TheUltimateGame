@@ -1,6 +1,8 @@
 import React, { useState, } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import Login from "./login";
+import * as MyUtils from "./utils"
 
 
 function Navbar() {
@@ -18,31 +20,60 @@ function Navbar() {
 
 function CardContainer(props) {
     return (
-        <div className="h-100 border shadow-sm ps-1 pe-1">
+        <div className="h-100 border shadow-sm p-1 pt-0 rounded">
             {props.children}
         </div>
     )
 }
 
 function Player() {
-    const level = 5;
+    // const level = 5;
     return (
         <CardContainer>
-            <b>player</b>
-            <div style={{ height: '70%', background: '#ddd' }}></div>
-            <p>Level: {level}</p>
-            <p>Buff: null</p>
-
+            <div className="d-flex flex-column h-100">
+                <div>player</div>
+                <div className="flex-grow-1" id="player-img"></div>
+            </div>
+            {/* <p>Level: {level}</p> */}
+            {/* <p>Buff: null</p> */}
         </CardContainer>
     )
 }
 
-function Stat() {
-    return (
-        <CardContainer>
-            <div>stats</div>
-        </CardContainer>
-    )
+class Stat extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            level: "...",
+            xp: "...",
+            upgrade_xp: "...",
+            coin: "..."
+        };
+        this.updateUserData();
+    }
+
+    updateUserData = () => {
+        MyUtils.getUserData((data) => {
+            this.setState({
+                level: data.level,
+                xp: data.xp,
+                coin: data.coin,
+                upgrade_xp: data.upgrade_xp,
+            })
+        });
+    }
+
+
+    render() {
+        return (
+            <CardContainer>
+                <div>stats</div>
+                <div><b>Level: </b> {this.state.level} </div>
+                <div><b>Coin: </b> {this.state.coin} </div>
+                <div><b>XP: </b> {this.state.xp} / {this.state.upgrade_xp} </div>
+            </CardContainer>
+        )
+    }
 }
 
 function DailyTask() {
@@ -62,49 +93,98 @@ function Rewards() {
     )
 }
 
-
-function Tasks(props) {
-    let tasks = [
-        { name: 't1', subTask: null },
-        { name: 't2', subTask: null },
-        {
-            name: 't3', subTask: [
-                {
-                    name: 't31', subTask: [{ name: 't1', subTask: null },
-                    { name: 't2', subTask: null },]
-                },
-                { name: 't31', subTask: null },
-                { name: 't31', subTask: null },
-            ]
-        },
-        { name: 't4', subTask: null },
-        { name: 't5', subTask: null },
-    ];
-
-
-    const taskToHtml = (tasks) => {
-        let li = [];
-        tasks.forEach((task, i) => {
-            li.push(<li key={i}>{task.name}</li>)
-            if (task.subTask) {
-                li.push(taskToHtml(task.subTask));
-            }
-        })
-        return <ul>{li}</ul>
+class OneTask extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
     }
 
-    const [ul, setUl] = useState(taskToHtml(tasks));
-    // setUl(taskToHtml(tasks));
+    render() {
+        return (
+            <li className={"list-group-item " + (this.props.data.is_finished ? "finished-task" : "")}>
+                <div className="d-flex justify-content-between">
+                    {this.props.data.is_finished ?
+                        <del>{this.props.data.name}</del> :
+                        <b>{this.props.data.name}</b>
+                    }
+                    <small>{this.props.data.update_time}</small>
+                </div>
+                <p>{this.props.data.content}</p>
+                <div className="d-flex justify-content-between">
+                    <small>DDL: {this.props.data.ddl}</small>
+                    <div>
+                        {this.props.data.label.split(",").map(l => {
+                            return <span className="badge text-secondary border ms-1 border-secondary">{l}</span>
+                        })}
+                    </div>
+                </div>
+            </li>
+        )
+    }
+}
 
-    return (
-        <CardContainer>
-            <div>
-                tasks
-                <button className="btn btn-secondary" onClick={() => { setUl(<ul></ul>) }}>Clear</button>
-            </div>
-            {ul}
-        </CardContainer>
-    )
+class AddTask extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+}
+
+class Tasks extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            taskData: [
+                {
+                    "id": 2,
+                    "uid": 2,
+                    "parent_id": null,
+                    "name": "This is a finished Project",
+                    "content": "This is a content",
+                    "update_time": "2022-04-25 00:06:53",
+                    "is_finished": true,
+                    "finish_time": "2022-04-25 12:14:38",
+                    "ddl": "2022-05-01 09:00:00",
+                    "task_level": 1,
+                    "label": "label1,label2"
+                },
+                {
+                    "id": 3,
+                    "uid": 2,
+                    "parent_id": null,
+                    "name": "This is an unfinished Project",
+                    "content": "Another Content",
+                    "update_time": "2022-04-25 00:06:53",
+                    "is_finished": false,
+                    "finish_time": "2022-04-25 12:14:38",
+                    "ddl": "2022-05-01 09:00:00",
+                    "task_level": 1,
+                    "label": "label1,label2,label3"
+                },
+            ],
+        }
+        this.getTask();
+    }
+
+    getTask() {
+        MyUtils.getTasks((data) => {
+            // this.setState({ taskData: data });
+        })
+    }
+
+    render() {
+        return (
+            <CardContainer>
+                <div>
+                    tasks
+                </div>
+                <ul>
+                    {this.state.taskData.map(data => <OneTask data={data} />)}
+                </ul>
+            </CardContainer>
+        )
+    }
+
 }
 
 function App() {
@@ -138,7 +218,23 @@ function App() {
     )
 }
 
+
+
 // ========================================
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+
+let renderApp = () => {
+    console.log('Successfully logged in!')
+    root.render(<App />)
+};
+
+let renderLogin = () => {
+    console.log('Token times out! Please log in!')
+    MyUtils.setCookie('token', null, 0)
+    root.render(<Login />)
+};
+
+MyUtils.checkToken(renderApp, renderLogin)
+
+

@@ -7,11 +7,22 @@ from hashlib import md5
 from typing import Optional, Union
 from fastapi import FastAPI, Cookie, Query, Body
 from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from sql_utils import sql2pd
 from token_utils import create_token, check_token
 
 app = FastAPI()
+
+origins = ["http://0.0.0.0:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -91,8 +102,8 @@ def login(mail: str, pwd: str):
     name = user["name"]
     uid = user["id"]
 
-    response = HTMLResponse("success")
     token = create_token({"name": str(name), "uid": str(uid)})
+    response = JSONResponse({"token": token, "msg": "success"})
     response.set_cookie(key="token", value=token)
     return response
 
@@ -309,7 +320,7 @@ def gettask(token: Optional[str] = Cookie(None)):
     """, [uid])
 
     if res is None:
-        return {}
+        return []
 
     res["update_time"] = pd.to_datetime(
         res["update_time"]).dt.strftime('%Y-%m-%d %X')

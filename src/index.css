@@ -64,6 +64,19 @@ p {
     padding-top: 0.75rem;
 }
 
+#player-img {
+    background-color: rgba(216, 216, 216, 0.557);
+}
+
+.finished-task {
+    background-color: rgb(237, 240, 237);
+}
+
+small {
+    font-size: x-small;
+}
+
+
 /* ===== mobile ===== */
 @media only screen and (max-width: 768px) {
     .col-md-3 {
