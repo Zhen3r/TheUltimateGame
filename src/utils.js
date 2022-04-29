@@ -1,7 +1,7 @@
 import $ from "jquery";
 
 // export let backendAddress = "http://0.0.0.0:8000/"
-export let backendAddress = "http://orifish.tech:20011/"
+export let backendAddress = "http://tug.orifish.tech:20011/"
 
 export function setCookie(key, value, expiry) {
     var expires = new Date();
