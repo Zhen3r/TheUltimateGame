@@ -1,20 +1,19 @@
-
 import $ from "jquery";
 
-let backendAddress = "http://0.0.0.0:8000/"
+export let backendAddress = "http://0.0.0.0:8000/"
 
-function setCookie(key, value, expiry) {
+export function setCookie(key, value, expiry) {
     var expires = new Date();
     expires.setTime(expires.getTime() + (expiry * 24 * 60 * 60 * 1000));
     document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
 }
 
-function getCookie(key) {
+export function getCookie(key) {
     var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
     return keyValue ? keyValue[2] : null;
 }
 
-function checkToken(onSuccess, onFailure) {
+export function checkToken(onSuccess, onFailure) {
     if (getCookie('token') === null) {
         onFailure();
     } else {
@@ -32,7 +31,7 @@ function checkToken(onSuccess, onFailure) {
     }
 }
 
-let getUserData = (onSuccess) => {
+export let getUserData = (onSuccess) => {
     console.log("Getting user data!")
     $.ajax({
         url: backendAddress + "userinfo",
@@ -49,7 +48,7 @@ let getUserData = (onSuccess) => {
     })
 }
 
-let getTasks = (onSuccess) => {
+export let getTasks = (onSuccess) => {
     console.log("Getting tasks!")
     $.ajax({
         url: backendAddress + "gettask",
@@ -66,7 +65,8 @@ let getTasks = (onSuccess) => {
     })
 }
 
-let login = (mail, pwd, onSuccess, onFailure) => {
+export let login = (mail, pwd, onSuccess, onFailure) => {
+    console.log("Logging in using utils.js")
     $.ajax({
         url: backendAddress + "login",
         type: 'get',
@@ -80,5 +80,57 @@ let login = (mail, pwd, onSuccess, onFailure) => {
     })
 }
 
+export let addTask = (data, onSuccess, onFailure) => {
+    // data: {name, level, content, parent_id, ddl, label}
+    let nonNullData = {};
+    for (let k in data) {
+        if (data[k] !== "" && data[k] !== null) {
+            nonNullData[k] = data[k];
+        }
+    }
+    console.log("Submitting task!", nonNullData);
+    $.ajax({
+        url: backendAddress + "addtask",
+        type: 'get',
+        data: nonNullData,
+        xhrFields: { withCredentials: true },
+        crossDomain: true,
+        statusCode: {
+            200: onSuccess,
+            401: onFailure,
+        },
+    })
+}
 
-export { backendAddress, setCookie, getCookie, checkToken, getUserData, login, getTasks };
+export let delTask = (task_id, onSuccess, onFailure) => {
+    console.log("Deleting task!", task_id);
+    $.ajax({
+        url: backendAddress + "deletetask",
+        type: 'get',
+        data: { task_id },
+        xhrFields: { withCredentials: true },
+        crossDomain: true,
+        statusCode: {
+            200: onSuccess,
+            401: onFailure,
+        },
+    })
+}
+
+export let finishTask = (task_id, onSuccess, onFailure) => {
+    console.log("Finishing task!", task_id);
+    $.ajax({
+        url: backendAddress + "finishtask",
+        type: 'get',
+        data: { task_id },
+        xhrFields: { withCredentials: true },
+        crossDomain: true,
+        statusCode: {
+            200: onSuccess,
+            401: onFailure,
+        },
+    })
+}
+
+
+

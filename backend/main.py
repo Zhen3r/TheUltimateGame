@@ -114,7 +114,7 @@ def addtask(
     task_level: int,
     parent_id: Optional[int] = None,
     content: Optional[str] = None,
-    ddl: Optional[datetime.datetime] = None,
+    ddl: Optional[Union[datetime.datetime, datetime.date]] = None,
     is_finished: Optional[bool] = False,
     label: Optional[str] = None,
     token: Optional[str] = Cookie(None),
@@ -317,6 +317,7 @@ def gettask(token: Optional[str] = Cookie(None)):
         select t.*, l.label from t
         left join aggTaskLabel l 
         on t.id = l.task_id
+        order by is_finished asc, update_time desc
     """, [uid])
 
     if res is None:
@@ -332,6 +333,23 @@ def gettask(token: Optional[str] = Cookie(None)):
     response = JSONResponse(res.to_dict('records'))
     return response
 
+
+@app.get("/deletetask")
+def deletetask(task_id: int, token: Optional[str] = Cookie(None)):
+    try:
+        uid = check_token(token)["uid"]
+    except:
+        return tokenVerifyFailure()
+
+    # TODO: verify task owner..
+
+    sql2pd("""
+        delete from task_labels
+        where task_id = %s;
+        delete from tasks
+        where id = %s and uid = %s;
+    """, [task_id, task_id, uid])
+    return HTMLResponse("success")
 
 # 添加奖励
 

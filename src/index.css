@@ -58,6 +58,7 @@ p {
 
 .container-fluid {
     padding-bottom: 0.75rem;
+
 }
 
 .card-container {
@@ -74,6 +75,27 @@ p {
 
 small {
     font-size: x-small;
+}
+
+#add-task-button {
+    font-size: x-large;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 1rem;
+    border-radius: 100px;
+    padding: 0rem;
+    line-height: 0rem;
+    height: 2.5rem;
+    width: 2.5rem
+}
+
+.task-ul {
+    margin-left: -2rem;
+}
+
+.spinner-loading {
+    transition: all 0.3s;
 }
 
 

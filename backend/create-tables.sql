@@ -45,6 +45,8 @@ insert into tasks(uid,task_level) VALUES
 
 select * from tasks;
 
+-- delete from tasks;
+
 -- rewards
 create table rewards(
     id serial primary key,
